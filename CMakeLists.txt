@@ -14,7 +14,7 @@ include_directories(${LIBNETCONF2_INCLUDE_DIRS})
 include_directories(${LIBYANG_INCLUDE_DIRS})
 
 # add_library(nc_connect STATIC nc_connect.cc)
-add_executable(connect nc_connect.cc)
+add_executable(connect mod_netconf.cc)
 
 
 
