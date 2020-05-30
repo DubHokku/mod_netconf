@@ -27,7 +27,7 @@ int main( int ac, char** av )
     std::cout << "lock datastore\n";
     netconf->nc_send_receive_xml( netconf->get_session( session_ident ), nc_rpc_lock( NC_DATASTORE_CANDIDATE ), &xreply );
     std::cout << "xreply:\n" << xreply << std::endl;
-    // nc_rpc_free( rp_request );
+
 /* copy config */ 
     std::cout << "copy config\n";
     netconf->nc_send_receive_xml( netconf->get_session( session_ident ), request->run_to_prepare(), &xreply );
@@ -39,6 +39,7 @@ int main( int ac, char** av )
     rp_request = request->config_add( query );
     netconf->nc_send_receive_xml( netconf->get_session( session_ident ), rp_request, &xreply );
     std::cout << "xreply:\n" << xreply << std::endl;
+    free( edit_config );
     nc_rpc_free( rp_request ); 
 */
     
@@ -47,6 +48,7 @@ int main( int ac, char** av )
     rp_request = request->config_rm( query );
     netconf->nc_send_receive_xml( netconf->get_session( session_ident ), rp_request, &xreply );
     std::cout << "xreply:\n" << xreply << std::endl;
+    free( edit_config );
     nc_rpc_free( rp_request ); 
     
 /* commit */
@@ -65,6 +67,7 @@ int main( int ac, char** av )
     rp_request = request->get_interfaces( junos_ctx, interface );
     netconf->nc_send_receive_xml( netconf->get_session( session_ident ), rp_request, &xreply );
     std::cout << "xreply:\n" << xreply << std::endl;
+    free( edit_config );
     nc_rpc_free( rp_request ); 
     
     std::cout << "connection done \n";

@@ -11,8 +11,7 @@ class mk_request
     struct nc_rpc* config_add( char* );
     struct nc_rpc* config_rm( char* );
     
-    
-    struct nc_rpc* get_interfaces( struct ly_ctx*, char* );
+    struct nc_rpc* get_interfaces( struct ly_ctx* );
     struct nc_rpc* get_interface_info( struct ly_ctx*, char* );
     struct nc_rpc* get_neighbors( struct ly_ctx*, char* );
     
@@ -28,8 +27,6 @@ class mk_request
     struct nc_rpc* lock_candidate();
     struct nc_rpc* unlock_candidate();
     
-    
-    
     private:
 };
 
@@ -42,8 +39,8 @@ struct nc_rpc* mk_request::config_add( char* config )
     edit_config = ( char* )malloc( strlen( config ));
     sprintf( edit_config, "%s", config );
     
-    rp_request = nc_rpc_edit( NC_DATASTORE_CANDIDATE, NC_RPC_EDIT_DFLTOP_MERGE, NC_RPC_EDIT_TESTOPT_TESTSET, 
-        NC_RPC_EDIT_ERROPT_STOP, edit_config, NC_PARAMTYPE_FREE );
+    rp_request = nc_rpc_edit( NC_DATASTORE_CANDIDATE, NC_RPC_EDIT_DFLTOP_MERGE, NC_RPC_EDIT_TESTOPT_SET, 
+        NC_RPC_EDIT_ERROPT_ROLLBACK, edit_config, NC_PARAMTYPE_FREE );
     
     return rp_request;
 }
@@ -54,8 +51,8 @@ struct nc_rpc* mk_request::config_rm( char* config )
     edit_config = ( char* )malloc( strlen( config ));
     sprintf( edit_config, "%s", config );
     
-    rp_request = nc_rpc_edit( NC_DATASTORE_CANDIDATE, NC_RPC_EDIT_DFLTOP_REPLACE, NC_RPC_EDIT_TESTOPT_TESTSET, 
-        NC_RPC_EDIT_ERROPT_STOP, edit_config, NC_PARAMTYPE_FREE );
+    rp_request = nc_rpc_edit( NC_DATASTORE_CANDIDATE, NC_RPC_EDIT_DFLTOP_REPLACE, NC_RPC_EDIT_TESTOPT_SET, 
+        NC_RPC_EDIT_ERROPT_ROLLBACK, edit_config, NC_PARAMTYPE_FREE );
     
     return rp_request;
 }
@@ -64,10 +61,8 @@ struct nc_rpc* mk_request::get_interfaces( struct ly_ctx* junos_ctx, char* inter
 {
     struct nc_rpc* rp_request;
     
-    // rp_request = nc_rpc_getconfig( NC_DATASTORE_RUNNING, "<configuration><interfaces><interface><name>ge-0/0/0</name></interface></interfaces></configuration>", NC_WD_UNKNOWN, NC_PARAMTYPE_CONST );
-    rp_request = nc_rpc_getconfig( NC_DATASTORE_RUNNING, "<configuration></configuration>", NC_WD_UNKNOWN, NC_PARAMTYPE_CONST );
+    rp_request = nc_rpc_getconfig( NC_DATASTORE_RUNNING, "<configuration><interfaces></interfaces></configuration>", NC_WD_UNKNOWN, NC_PARAMTYPE_CONST );
 
-    
     if( rp_request == NULL )
         std::cout << "nc_rpc_act_generic() ret. null \n";
     else
@@ -85,12 +80,6 @@ struct nc_rpc* mk_request::get_interface_info( struct ly_ctx* junos_ctx, char* i
     
     struct lyd_node *path_conf = lyd_new_path( NULL, junos_ctx, path, interface, ( LYD_ANYDATA_VALUETYPE )0, 0 );
     lyd_schema_sort( path_conf, 0 );
-    
-/* lyd print mem */
-    void* xml_dump = malloc( 1024 );
-    lyd_print_mem(( char** )&xml_dump, path_conf, LYD_XML, LYP_NETCONF );
-    std::cout << "xml dump\n" << ( char* )xml_dump << std::endl;
-/* /lyd print mem */
     
     rp_request = nc_rpc_act_generic(( const struct lyd_node* )path_conf, NC_PARAMTYPE_FREE );
     if( rp_request == NULL )

@@ -13,15 +13,15 @@ std::map<std::string, std::string> auth_db;
 
 void init_auth()
 {
-    char login[] = "root";
+    // char login[] = "root";
     // char address[] = "192.168.33.3";
     // char address[] = "192.168.22.2";
-    char address[] = "192.168.11.3";
+    // char address[] = "192.168.11.3";
     
-    char* user = ( char* )malloc( sizeof( login ) + 1 );
-    char* host = ( char* )malloc( sizeof( address ) + 1 );
-    strcpy( user, login );
-    strcpy( host, address );
+    // char* user = ( char* )malloc( sizeof( login ) + 1 );
+    // char* host = ( char* )malloc( sizeof( address ) + 1 );
+    // strcpy( user, login );
+    // strcpy( host, address );
     
     std::string account_1( "root@192.168.11.3" );
     std::string account_nc( "root@192.168.33.3" );
@@ -86,8 +86,7 @@ nc_connect::nc_connect()
     nc_verbosity( lverbose );
     
     msg_id = 1;
-    // timeout = 17;
-    timeout = 1217;
+    timeout = 17;
 }
 
 nc_connect::~nc_connect()
@@ -161,7 +160,7 @@ uint16_t nc_connect::mk_session( char* user, char* host, struct ly_ctx* junos_ct
     rp_session = nc_connect_ssh( host, 830, junos_ctx );
 
     auto session_ptr = sessions.cend();
-    if( session_ptr != sessions.cbegin())
+    if( session_ptr != sessions.crbegin())
         session_ident = session_ptr->first + 1;
     
     sessions.insert( std::pair<uint16_t, struct nc_session*>( session_ident, rp_session ));
@@ -186,14 +185,7 @@ int nc_connect::nc_send_receive_xml( struct nc_session* rp_session, struct nc_rp
 {
     NC_MSG_TYPE msgtype;
     struct lyxml_elem *xmsg;
-/*    
-    uint16_t session_ident
-    auto session_ptr = sessions.find( session_ident );
-    if( session_ptr != sessions.end())
-        rp_session = session_ptr->second;
-    else
-        std::cout << "session id " << session_ident << " not found!\n";
-*/    
+   
     msgtype = nc_send_rpc( rp_session, rp_request, timeout, &msg_id );
     if( msgtype == NC_MSG_ERROR )
     {
@@ -267,7 +259,6 @@ recv_reply:
         case NC_MSG_REPLY:
             std::cout << "msgtype NC_MSG_REPLY\n";
             lyxml_print_mem( xreply, xmsg, LYXML_PRINT_SIBLINGS );
-            // std::cout << "reply:\n" << *xreply << std::endl;
         break;
         case NC_MSG_REPLY_ERR_MSGID:
             std::cout << "msgtype NC_MSG_REPLY_ERR_MSGID\n";
