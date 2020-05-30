@@ -70,6 +70,25 @@ int main( int ac, char** av )
     free( edit_config );
     nc_rpc_free( rp_request ); 
     
+/* get_interface_info
+    rp_request = request->get_interface_info( junos_ctx, interface );
+    netconf->nc_send_receive_xml( netconf->get_session( session_ident ), rp_request, &xreply );
+    std::cout << "xreply:\n" << xreply << std::endl;
+    nc_rpc_free( rp_request ); 
+*/
+/* get_neighbors
+    rp_request = request->get_neighbors( junos_ctx, interface );
+    netconf->nc_send_receive_xml( netconf->get_session( session_ident ), rp_request, &xreply );
+    std::cout << "xreply:\n" << xreply << std::endl;
+    nc_rpc_free( rp_request );
+*/
+/* get-vlan-information 
+    rp_request = request->get_vlans( junos_ctx, interface );
+    netconf->nc_send_receive_xml( netconf->get_session( session_ident ), rp_request, &xreply );
+    std::cout << "xreply:\n" << xreply << std::endl;
+    nc_rpc_free( rp_request ); 
+*/
+    
     std::cout << "connection done \n";
     return 0;
 }
